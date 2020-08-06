@@ -1,0 +1,79 @@
+﻿USE [TestData]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataSave]    Script Date: 8/6/2020 4:22:01 PM ******/
+DROP PROCEDURE [dbo].[sp_DataSave]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataLoad]    Script Date: 8/6/2020 4:22:01 PM ******/
+DROP PROCEDURE [dbo].[sp_DataLoad]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataInsert]    Script Date: 8/6/2020 4:22:01 PM ******/
+DROP PROCEDURE [dbo].[sp_DataInsert]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataDelete]    Script Date: 8/6/2020 4:22:01 PM ******/
+DROP PROCEDURE [dbo].[sp_DataDelete]
+GO
+ALTER TABLE [dbo].[tbl_Data] DROP CONSTRAINT [DF_tbl_Data_DateAdded]
+GO
+/****** Object:  Table [dbo].[tbl_Data]    Script Date: 8/6/2020 4:22:01 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tbl_Data]') AND type in (N'U'))
+DROP TABLE [dbo].[tbl_Data]
+GO
+/****** Object:  Table [dbo].[tbl_Data]    Script Date: 8/6/2020 4:22:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tbl_Data](
+	[TestData] [varchar](50) NULL,
+	[DateAdded] [datetime] NULL,
+	[DateUpdated] [datetime] NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[tbl_Data] ADD  CONSTRAINT [DF_tbl_Data_DateAdded]  DEFAULT (getdate()) FOR [DateAdded]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataDelete]    Script Date: 8/6/2020 4:22:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[sp_DataDelete](@TestData varchar(25))
+as
+
+delete [dbo].[tbl_Data]
+where TestData = @TestData
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataInsert]    Script Date: 8/6/2020 4:22:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[sp_DataInsert](@TestData varchar(25))
+as
+insert into [dbo].[tbl_Data](TestData, DateAdded, DateUpdated)
+values( @TestData, getdate(), getdate());
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataLoad]    Script Date: 8/6/2020 4:22:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[sp_DataLoad](@TestData varchar(30) = null)
+as
+
+select * from [dbo].[tbl_Data]
+where TestData = @TestData or coalesce(@TestData,'') = ''
+
+GO
+/****** Object:  StoredProcedure [dbo].[sp_DataSave]    Script Date: 8/6/2020 4:22:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[sp_DataSave](@TestData varchar(25), @DateUpdated datetime)
+as
+
+update [dbo].[tbl_Data]
+set 
+DateUpdated = @DateUpdated
+where TestData = @TestData
+GO
